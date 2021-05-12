@@ -433,9 +433,9 @@ TreeSet可以带参，参数里面自动生成一个compare的函数
 
  
 
-泛型
+## 泛型（需要补充泛型方法）
 
-泛型类是类名后面跟<T>其他一样，该换换
+**泛型类是类名后面跟<T>其他一样，该换换**
 
 泛型接口是在接口名后跟<T> 其他一样，
 
@@ -457,7 +457,7 @@ Map<String,String> map1 = new HashMap<String><String>();
 
 添加方法map1.put("32","hajizu ")第一次出现添加元素，第二次出现更改元素
 
-![img](file:///C:/Users/Ha/AppData/Local/Temp/msohtmlclip1/01/clip_image009.png)![img](file:///C:/Users/Ha/AppData/Local/Temp/msohtmlclip1/01/clip_image010.png)
+![img](java基础.assets/clip_image009.png)![img](java基础.assets/clip_image010.png)
 
 实例：
 
@@ -483,7 +483,7 @@ System.out.println(map1.size());
 
  
 
-![img](file:///C:/Users/Ha/AppData/Local/Temp/msohtmlclip1/01/clip_image012.png)![img](file:///C:/Users/Ha/AppData/Local/Temp/msohtmlclip1/01/clip_image013.png)
+![img](java基础.assets/clip_image012.png)![img](java基础.assets/clip_image013.png)
 
 System.out.println(map1.get(32));
 
