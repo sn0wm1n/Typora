@@ -1,4 +1,4 @@
-# JDBC
+#  JDBC
 
 ##   WEB技术体系概览
 
@@ -96,9 +96,9 @@ PreparedStatement.close();
 connection.close();
 ```
 
-### 详解步骤中的对象
+## 详解手动连接步骤中的对象
 
-#### DriverManager 
+### DriverManager 
 
 驱动管理对象 是一个类不是接口  
 
@@ -149,14 +149,14 @@ jdbc:mysql:///数据库名
 
 功能
 
-#### 获取执行sql的对象
+#### 1.获取执行sql的对象
 
 ```java
 //傻傻的Statement statement = connection.createStatement();
 PreparedStatement preparedStatement = connection.prepareStatement();
 ```
 
-#### 管理事务
+#### 2.管理事务
 
 ```java
 //开启事务
@@ -226,9 +226,123 @@ getColumnLabel()获取列的别名
 
 1.PreparedStatement操作Blob的数据，Statement做不到
 
+其他都一样，想获取图片，需要在获得结果集之后，getBlob获得Blob对象。通过Blob对象获得输入流  
+
+创建输出流，通过输入流的内容，写入到本地；
+
 2.PreparedStatement可以实现高效的批量操作
 
-## 第三章写通用的增删改查操作
+### Blob操作
+
+```java
+import JDBCUtils.JDBCUtils;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class InsertPhoto {
+    public static void main(String[] args) {
+        String sql="update beauty set photo = ?";
+        update(sql);
+    }
+    public static  void update(String sql)  {
+        Connection conn=null;
+        PreparedStatement ps=null;
+        FileInputStream fs = null;
+        try {
+            conn = JDBCUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            fs = new FileInputStream("A:\\real_R\\VScode\\lovebox\\a1.jpg");
+            ps.setBlob(1,fs);
+            ps.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close(ps,conn);
+            if(fs!=null) {
+                try {
+                    fs.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+```
+
+### 批量操作Batch
+
+用到三个方法
+
+1.addBatch(),executeBatch(),clearBatch();
+
+分别是攒batch，执行batch，清空batch 
+
+使用batch需要在配置文件中库名后面写入?rewriteBatchedStatements=true；
+
+用于减少execute次数 
+
+还有就是用到使得Connection对象不得自动提交，把所有的数据缓存了再一起提交
+
+```java
+//批量插入的方式四：设置连接不允许自动提交数据
+	@Test
+	public void testInsert3() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			
+			long start = System.currentTimeMillis();
+			
+			conn = JDBCUtils.getConnection();
+			
+			//设置不允许自动提交数据
+			conn.setAutoCommit(false);
+			
+			String sql = "insert into goods(name)values(?)";
+			ps = conn.prepareStatement(sql);
+			for(int i = 1;i <= 1000000;i++){
+				ps.setObject(1, "name_" + i);
+				
+				//1."攒"sql
+				ps.addBatch();
+				
+				if(i % 500 == 0){
+					//2.执行batch
+					ps.executeBatch();
+					
+					//3.清空batch
+					ps.clearBatch();
+				}
+				
+			}
+			
+			//提交数据
+			conn.commit();
+			
+			long end = System.currentTimeMillis();
+			
+			System.out.println("花费的时间为：" + (end - start));//20000:83065 -- 565
+		} catch (Exception e) {								//1000000:16086 -- 5114
+			e.printStackTrace();
+		}finally{
+			JDBCUtils.closeResource(conn, ps);
+			
+		}
+		
+	}
+```
+
+
+
+## 第三章手写通用的增删改查操作
 
 ### 1.通用的增删改
 
@@ -361,6 +475,13 @@ connection.setAutoCommit(false);
 connection.commit();
 //回滚事务
 connection.rollback();
+//获取链接
+Connection conn = JDBCUtils.getConnection();
+//获取当前的隔离级别
+int transactionIsolation = conn.getTransactionIsolation();
+System.out.println(transactionIsolation);
+//设置当前隔离级别
+conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 ```
 3.使用Connection对象来管理事务
 
@@ -394,9 +515,16 @@ connection.rollback();
 
 ### Druid：数据库连接池实现技术（阿里）
 
+所有连接池技术都是DataSource的实现  
 
+我们在使用的时候一般有两种方式，一般用第二种，第一种是创建相关的对象
 
+```java
+DataSource source = new DruidDataSource();
+然后source.setXxx()  Xxx 是各种参数，下面的配置文件中给出
+```
 
+第二种是使用配置文件，
 
 
 

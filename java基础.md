@@ -203,7 +203,15 @@ String直接赋值的String对象的变量存在变量池里面，长得一样�
 
 引用类型==比较的是地址是否相同
 
-需要比较new出来的和直接赋值的两个String的内容的话，用equals equals是String的一个成员方法，用其中一个String对象调用，参数括号里面写另外一个，Boolean、返回值
+### equals
+
+需要比较new出来的和直接赋值的两个String的内容的话，用equals equals是String的一个成员方法，String str1，str2，
+
+str1.equals（str2）；
+
+返回值为Boolean
+
+**equals含有equalsIgnoreCase方法，**在比较的时候会忽略大小写
 
 charAt() 对象用法 ， String的charAt() 括号里面是角标
 
