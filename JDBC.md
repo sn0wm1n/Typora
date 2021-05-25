@@ -526,6 +526,18 @@ DataSource source = new DruidDataSource();
 
 第二种是使用配置文件，
 
+```java
+//MySQL8配置文件写法
+username=root
+password=1234
+url = jdbc:mysql://localhost:3306/book?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+drive = com.mysql.cj.jdbc.Driver
+initialSize=5
+maxActive=10
+```
+
+## 第六章 DAO及其实现类
+
 
 
 
