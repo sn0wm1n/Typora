@@ -824,7 +824,7 @@ onsubmit	提交前	常用于表单提交前，验证所有表单是否合法
 </body>
 ```
 
-#### 动态注册conclick
+#### 动态注册onclick
 
 ```js
 <head>

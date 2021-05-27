@@ -8,6 +8,8 @@
 
 3.没有新建servlet的原因是，导包要把  Tomcat里面的lib下面servlet-api.jar包也导进来，并且在facet里面设置SourceRoot
 
+4.可太多了，，，，，
+
 # servlet与http的简单介绍  
 
 域名->DNS->ip->服务器  
@@ -477,6 +479,40 @@ response.sendRedirect("http://www.hao123.com");
 
 4、每个 Cookie 的大小不能超过 4kb
 
+看代码复习吧，着急可以重点看黄字，可以看看狂神笔记
+
+```java
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    response.setContentType("text/html;charset=UTF-8");
+    PrintWriter writer = response.getWriter();
+    //获取cookies集
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+        for (int i = 0; i < cookies.length; i++) {
+            if (cookies[i].getName().equals("lastTime")) {
+                writer.write("大哥请上座！！上次来咱们家还是");
+                //这边有个currentTime转date并且输出的方法
+                long l = Long.parseLong(cookies[i].getValue());
+                System.out.println(l);
+                Date date = new Date();
+                date.setTime(l);
+                System.out.println(date);
+                writer.write(date.toLocaleString());
+
+            }
+        }
+    } else {
+        writer.write("新来的我*你*");
+    }
+    Cookie co = new Cookie("lastTime", System.currentTimeMillis() + "");
+    //存活时间
+    co.setMaxAge(60 * 60 * 24);
+    //由相应对象给客户端浏览器添加cookie
+    response.addCookie(co);
+}
+```
+
 
 
 ## Session
@@ -498,6 +534,41 @@ Session就是会话，
 分辨方法：ifNew() 判断Session是不是刚创建出来的
 
 每一个会话都有一个身份证号，这个ID是唯一的
+
+```
+目前，共有3种方法
+1、使用Java函数,在程序中设置当前会话的有效时间
+session.setMaxInactiveInterval(30*60);//代表也是30分钟
+2、web.xml文件中
+以下代表设置为30分钟
+<session-config>
+<session-timeout>30</session-timeout>
+</session-config>
+
+3、在应用服务器，tomcat-->conf--->web.xml中
+找到
+<session-config>
+<session-timeout>30</session-timeout>
+</session-config>
+默认是30分钟
+
+注意：以上有优先级的问题，也就是如果三个都设置了，该优先听从谁的命令。
+1>2>3
+```
+
+
+
+## jsp
+
+<%%>	java代码
+
+<%=%>	表达式或者变量
+
+<%!%>	全局声明
+
+定制错误页面
+
+
 
 # 缺的笔记
 
