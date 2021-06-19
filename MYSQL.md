@@ -799,7 +799,7 @@ set auto_increment_increment=n
 -4标识列可以手动修改变量来改变起始值和步长  
 
 
-## TCL语言  
+## 事务控制TCL语言  
 Transaction Control Language  
 事务控制语言  
 为了保证一组语句能够一起执行，就是说要么都执行，要么都不执行，防止我操作没完全进行引起的逻辑混乱  

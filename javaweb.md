@@ -10,6 +10,22 @@
 
 4.可太多了，，，，，
 
+5.今天有一个很有意思，就是产销个区间查询的时候，查询完没什么问题但是当对分页条操作的时候由于分页条会转到分页那这边请求参数里面会没有max   min，导致新访问的页面直接刷新变成所有图书
+
+6.书城临时记在这里，感谢我自己没有完全跟着老师敲经常独自复现一些代码，
+
+看懂了书城项目的关于页面条的共用和实现，每当产生相应的请求的时候，例如去看后台的页条或者去看主页页条或者去看主页某个价格区间内的页条，都进入了对应处两车这个问题的servlet方法，那么我们就趁机给回传值（对象） 的时候，给对象加上url属性（类成员），这样的话共用的页条页面在调用所有的资源（进行下一次请求）的时候都是根据这个url属性（类成员）来找到相应的servlet，
+
+比如比如正在主页的分页查询，我需要切换到下一页，那必然是不能切换到别的servlet的下一页去，不然响应的就不是分页查询的结果了。
+
+
+
+7.java.lang.NoSuchMethodException: com.lcha.
+
+1.因为写错了servlet的mapping名字，开头一般都是小写，再有getContenPath是到工程名，后面要手动加一个 ' / '
+
+ 
+
 # servlet与http的简单介绍  
 
 域名->DNS->ip->服务器  
@@ -451,6 +467,14 @@ PrintWriter writer = response.getWriter();
 writer.write("老哈真帅");
 ```
 
+## 请求转发和重定向
+
+请求转发相对路径/打头 的话就是工程名下的web根目录，相当于getContentPath/
+
+web目录才是工程根目录（book）
+
+请求重定向相对路径是在端口号后面
+
 ## 请求重定向
 
 ```java
@@ -558,7 +582,7 @@ session.setMaxInactiveInterval(30*60);//代表也是30分钟
 
 
 
-## jsp
+## JSP
 
 <%%>	java代码
 
@@ -568,9 +592,205 @@ session.setMaxInactiveInterval(30*60);//代表也是30分钟
 
 定制错误页面
 
+## EL表达式 ${ }
+
+作用：$ { }
+
+​	获取数据
+
+​	执行运算
+
+​	获取web开发对象
+
+获取变量
+
+${ }
+
+EL表达式
+
+##  JSON
+
+- 轻量级数据交换格式（和xml作比较）
+
+- 数据交换指的是客户端和服务器之间业务数据的传输格式
+- 客户端和服务器之间的数据的传递格式
+- 
+
+### json在JS中的使用
+
+json的值是一组键值对类似于map，键值对形式，键类似String类型，值类似OBject类型
+
+列举一下
+
+{
+
+```js
+var json={
+  	"key1":123,
+    "key2":"123",
+    "key3":true,
+    "key4":[123,"123",true],
+    "key5":{"key5_1:123",
+            "key5_2:"123"
+           },
+    "key6":[{
+        "key6_1_1":611,
+        "key6_1_2":612,
+        "key6_1_3":613
+    },{
+        "key6_2_1":621,
+        "key6_2_2":622,
+        "key6_2_3":623        
+    }],    
+};
+```
+
+### JSON的重要方法
+
+json**在我们需要操作数据的时候**，是一个对象，json的键就是json 的类成员，json的值就是类成员的值
+
+json**在我们传输的时候**也可以是一个字符串，
+
+JSON.stringify()  把json转换为字符串
+
+JSON.parse()	把jon转换为对象
+
+### javaBean和JSON的相互转换
+
+包：Gson 
+
+方法  gson.toJson(p)   Bean转为json    这个方法也可以让List转Person类型
+
+方法 gson.fromJson(json,Person.class);     
+
+```java
+@Test
+public void test(){
+    Person p = new Person(1,"hajizu","hcdifh");
+    System.out.println(p);
+    Gson gson = new Gson();
+    String json = gson.toJson(p);
+    System.out.println(json);
+    //from json字符串转换回java对象
+    Person person = gson.fromJson(json, Person.class);
+    System.out.println(person);
+}
+```
+
+特别的，当List转换回Json 的时候，要获取到List的类型。就需要建立一个类来继承TypeToken
+
+注意，可以用匿名内部类 
+
+ArrayList<Person> app= g.fromJson(json, new TypeToken(){}.getType());
+
+```
+public class PersonListType extends TypeToken<List<Person>> {
+}
+```
+
+```java
+    @Test
+    public void test1(){
+        ArrayList<Person> ap = new ArrayList<Person>();
+
+        ap.add(new Person(1,"hajizu","tmuj"));
+        ap.add(new Person(12,"zujiha","bwjuj"));
+        //列表转JSON
+        Gson g = new Gson();
+        String json = g.toJson(ap);
+        System.out.println(json);
+        System.out.println("_____________---");
+        //JSON转列表
+        ArrayList arrayList = g.fromJson(json, ap.getClass());
+        for (Object o:arrayList
+             ) {
+            System.out.println(o);
+        }
+        //对比转回来的区别
+        for (Object o:ap
+        ) {
+            System.out.println(o);
+        }
+//        {id=1.0, name=hajizu, address=tmuj}
+//        {id=12.0, name=zujiha, address=bwjuj}
+//        Person{id=1, name='hajizu', address='tmuj'}
+//        Person{id=12, name='zujiha', address='bwjuj'}
+        //发现其中一种的类型变了，int类型的成员还成了Double类型
+        //想要获得原类型的这个Person需要用别的函数和参数Type
+        //建立一个public class PersonListType extends TypeToken<ArrayList<Person>> {
+        //}然后直接回来调用
+        ArrayList<Person> app= g.fromJson(json, new PersonListType().getType());
+        System.out.println(app.get(0));
 
 
-# 缺的笔记
+    }
+```
+
+
+
+## 书城项目感想
+
+今天做了书城项目，还没做完，趁热分享一下自己的一部分感想，
+
+两个Base
+
+- base标签
+
+  目前用到的就是请求转发中的base标签，请求转发的时候
+
+  - 在网页中，相对路径取决于当前的这个页面的位置！！！加了base标签就取决于base标签
+
+  - 在servlet中
+
+    相对路径是从web目录开始找
+
+- BaseServlet
+
+-  
+
+# 哈
+
+
+
+
+
+## AJAX
+
+### 通过JS异步发起请求，局部更新网页的技术
+
+$.ajax方法
+
+- url 表示请求的地址
+
+- type表示请求的类型GET     POST
+
+- data表示发送给服务器的数据
+
+  格式有两种：
+
+  一：&name=value&name=value
+
+  二：{key：value}
+
+- success请求响应，响应的回调函数
+
+- dataType响应的数据类型 
+
+    - ​		text纯文本
+    
+    - ​	xml
+    
+    - json 
+    
+      ![image-20210530081554048](javaweb.assets/image-20210530081554048-1622333763025.png)
+
+
+
+![image-20210530081616055](javaweb.assets/image-20210530081616055-1622333777717.png)
+
+
+
+# 看秦疆的
 
 jsp
 
@@ -583,3 +803,4 @@ JSTL标签库
 Filter
 
 AJAX
+
